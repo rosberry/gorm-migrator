@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 
 	m "project/cmd/migrate/migrations"
 	"project/models"
@@ -37,15 +37,17 @@ const (
 )
 
 // The flag package provides a default help printer via -h switch
-var versionFlag *bool = flag.Bool("v", false, "Print the version number.")
-var newMigration *string = flag.String("new", "", "Create a new migration.")
-var upFlag *bool = flag.Bool("up", false, "Execute all of your migrations.")
-var downFlag *bool = flag.Bool("down", false, "Rollback the latest migration operation.")
-var oneFlag *bool = flag.Bool("one", false, "Only one migration.")
-var listFlag *bool = flag.Bool("list", false, "Show a list of migrations.")
-var forceFlag *bool = flag.Bool("force", false, "Forcing migrations.")
-var sFlag *bool = flag.Bool("s", false, "Single transaction.")
-var deployFlag *bool = flag.Bool("deploy", false, "Use to deploy.")
+var (
+	versionFlag  *bool   = flag.Bool("v", false, "Print the version number.")
+	newMigration *string = flag.String("new", "", "Create a new migration.")
+	upFlag       *bool   = flag.Bool("up", false, "Execute all of your migrations.")
+	downFlag     *bool   = flag.Bool("down", false, "Rollback the latest migration operation.")
+	oneFlag      *bool   = flag.Bool("one", false, "Only one migration.")
+	listFlag     *bool   = flag.Bool("list", false, "Show a list of migrations.")
+	forceFlag    *bool   = flag.Bool("force", false, "Forcing migrations.")
+	sFlag        *bool   = flag.Bool("s", false, "Single transaction.")
+	deployFlag   *bool   = flag.Bool("deploy", false, "Use to deploy.")
+)
 
 var deployment, instance string
 
@@ -157,7 +159,6 @@ func main() {
 			}
 		}
 		db := models.GetDB()
-		defer db.Close()
 		tableOptions := ""
 		m.DBType = models.GetDBType()
 		if m.DBType == "mysql" {
@@ -269,7 +270,7 @@ func main() {
 				if last >= 0 {
 					newBatch = migrations[last].Batch + 1
 				}
-				var count uint
+				var count int64
 				var tx *gorm.DB
 				if *sFlag {
 					tx = db.Begin()
@@ -343,7 +344,7 @@ func main() {
 			if last < 0 {
 				fmtPrint(fmtInfo, "No implemented migrations...\n")
 			} else {
-				var count uint
+				var count int64
 				var tx *gorm.DB
 				if *sFlag {
 					tx = db.Begin()

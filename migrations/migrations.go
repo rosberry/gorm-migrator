@@ -9,14 +9,14 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 const TEMPLATE = `// nolint
 package migrations
 
 import (
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // MIGRATION: %s
